@@ -7,6 +7,22 @@
         <script src=js/jquery-1.11.1.min.js></script>
         <script src=js/jquery.mobile-1.4.2.min.js></script>
       <meta name="viewport" content="width=device-width, initial-scale=1">
+      
+      <script>
+	  function ShowTime()
+	  {
+		 var myDate = new Date();
+		 var strDate = myDate.toLocaleDateString();
+		 var strTime = myDate.toLocaleTimeString();
+		 document.getElementById("btnShowTime").innerHTML = strDate;
+		 document.getElementById("text1").value= strDate + " "+strTime;
+
+		 
+	  }
+	  
+	  </script>
+      
+      
 </head>
 
  <body>
@@ -15,26 +31,23 @@
                 <h1>jQuery Mobile</h1>
         </div>
         <div data-role="content">
-<div data-role="content">
+		<div data-role="content">
 
-<div data-role="collapsible">
-  <h2>History of Rome</h2>
-  <p>There is archaeological evidence of human occupation of the Rome area from at 
-     least 14,000 years, but the dense layer of much younger debris obscures 
-     Palaeolithic and Neolithic sites.[11] Evidence of stone tools, pottery and 
-     stone weapons attest to at least 10,000 years of human presence.
-  </p>
-</div>
-
-<div data-role="collapsible" data-collapsed="true">
-  <h2>Government of Rome</h2>
-  <p>Rome constitutes one of Italy's 8,101 communes, and is the largest both in terms 
-     of land area and population. It is governed by a mayor, currently Gianni Alemanno, 
-     and a city council.
-  </p>
-</div>
-
-</div>
+            <input id = "btnShowTime" type="button" onclick="ShowTime()" value="显示当前时间" >
+            <textarea id="text1"></textarea>
+            
+            <div data-role="fieldcontainer">
+            <label for="birth"> Your Birthdate:</label>
+            <input type="date" id="birth" name="birth">
+            <label for="favmonth"> Your favorite month:</label>
+            <input type="month" id="favmonth" name="favmonth">
+            <label for="nowTime"> NowTime:</label>
+            <input type="time" id="nowTime" name="nowTime">
+            <label for="nowDateTime"> DateTime:</label>
+            <input type="datetime" id="nowDateTime" name="nowDateTime">
+            <label for="nowTime2"> DateTime-local:</label>
+            <input type="datetime-local" id="nowTime2" name="nowTime2">
+            </div>
     
 
 

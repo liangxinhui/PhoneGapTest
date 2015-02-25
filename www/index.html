@@ -1,60 +1,40 @@
 <!DOCTYPE html>
- <html>
- <head>
-        <meta charset="utf-8" />
-        <title>My first jQuery Mobile code</title>
-        <link rel="stylesheet" href=js/jquery.mobile-1.4.2.min.css />
-        <script src=js/jquery-1.11.1.min.js></script>
-        <script src=js/jquery.mobile-1.4.2.min.js></script>
-      <meta name="viewport" content="width=device-width, initial-scale=1">
-      
-      <script>
-	  function ShowTime()
-	  {
-		 var myDate = new Date();
-		 var strDate = myDate.toLocaleDateString();
-		 var strTime = myDate.toLocaleTimeString();
-		 document.getElementById("btnShowTime").innerHTML = strDate;
-		 document.getElementById("text1").value= strDate + " "+strTime;
+<html>
+  <head>
+    <title>Acceleration Example</title>
 
-		 
-	  }
-	  
-	  </script>
-      
-      
-</head>
+    <script type="text/javascript" charset="utf-8" src="cordova-1.9.0.js"></script>
+    <script type="text/javascript" charset="utf-8">
 
- <body>
- <div data-role="page" data-theme="a">
-        <div data-role="header">
-                <h1>jQuery Mobile</h1>
-        </div>
-        <div data-role="content">
-		<div data-role="content">
+    // Wait for Cordova to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
 
-            <input id = "btnShowTime" type="button" onclick="ShowTime()" value="显示当前时间" >
-            <textarea id="text1"></textarea>
-            
-            <div data-role="fieldcontainer">
-            <label for="birth"> Your Birthdate:</label>
-            <input type="date" id="birth" name="birth">
-            <label for="favmonth"> Your favorite month:</label>
-            <input type="month" id="favmonth" name="favmonth">
-            <label for="nowTime"> NowTime:</label>
-            <input type="time" id="nowTime" name="nowTime">
-            <label for="nowDateTime"> DateTime:</label>
-            <input type="datetime" id="nowDateTime" name="nowDateTime">
-            <label for="nowTime2"> DateTime-local:</label>
-            <input type="datetime-local" id="nowTime2" name="nowTime2">
-            </div>
-    
+    // Cordova is ready
+    //
+    function onDeviceReady() {
+        navigator.accelerometer.getCurrentAcceleration(onSuccess, onError);
+    }
 
+    // onSuccess: Get a snapshot of the current acceleration
+    //
+    function onSuccess(acceleration) {
+        alert('Acceleration X: ' + acceleration.x + '\n' +
+              'Acceleration Y: ' + acceleration.y + '\n' +
+              'Acceleration Z: ' + acceleration.z + '\n' +
+              'Timestamp: '      + acceleration.timestamp + '\n');
+    }
 
-        </div>
-     <div data-role="footer">
-        <h4>&copy; liang </h4>
-     </div>
- </div>
- </body>
- </html>
+    // onError: Failed to get the acceleration
+    //
+    function onError() {
+        alert('onError!');
+    }
+
+    </script>
+  </head>
+  <body>
+    <h1>Example</h1>
+    <p>getCurrentAcceleration</p>
+  </body>
+</html>

@@ -5,65 +5,58 @@
 </head>
 <body>
     <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
-    <div id="main" style="height:400px"></div>
+    <div id="main" style="height:300px; width:400px;"></div>
 	<input id="btnAddData" type="button" value="AddData" onclick="onAddDataClicked()"></input>
 	
     <!-- ECharts单文件引入 -->
-    <script src="http://echarts.baidu.com/build/dist/echarts.js"></script>
+    <script src="EChart/echarts-all.js"></script>
+   <!-- <script src="EChart/chart/line.js"></script> -->
     <script type="text/javascript">
-        // 路径配置
-        require.config({
-            paths: {
-                echarts: 'http://echarts.baidu.com/build/dist'
-            }
-        });
-        
-        // 使用
-        require(
-            [
-                'echarts',
-                'echarts/chart/line' // 使用柱状图就加载bar模块，按需加载
-            ],
-            function (ec) {
-                // 基于准备好的dom，初始化echarts图表
-                var myChart = ec.init(document.getElementById('main')); 
-                
-                var option = {
-                    tooltip: {
-                        show: true
-                    },
-                    legend: {
-                        data:['Value']
-                    },
-                    xAxis : [
-                        {
-                            type : 'category',
-                            data : [1,2,3,4,5]
-                        }
-                    ],
-                    yAxis : [
-                        {
-                            type : 'value'
-                        }
-                    ],
-                    series : [
-                        {
-                            "name":"Value",
-                            "type":"line",
-                            "data":[5, 20, 40, 10, 10]
-                        }
-                    ]
-                };
-        
-                // 为echarts对象加载数据 
-                myChart.setOption(option); 
-            }
-        );
+	 var myChart = echarts.init(document.getElementById('main')); 
+	
+	var option = {
+		tooltip: {
+			show: true
+		},
+		xAxis : [
+			{
+				type : 'category',
+				data : [0]
+			}
+		],
+		yAxis : [
+			{
+				type : 'value'
+			}
+		],
+		series : [
+			{
+				"name":"Value",
+				"type":"line",
+				"data":[0]
+			}
+		]
+	};
+
+	// 为echarts对象加载数据 
+	myChart.setOption(option); 
 		
-		
+	var axisDataLast = 0;
+	var lastData = 0;
 	function onAddDataClicked()
 	{
-			alert("OK");	
+	lastData += Math.random() * ((Math.round(Math.random() * 10) % 2) == 0 ? 1 : -1);
+    lastData = lastData.toFixed(1) - 0;
+    axisDataLast += 1;
+    // 动态数据接口 addData
+    myChart.addData([[
+            0,        // 系列索引
+            lastData, // 新增数据
+            false,    // 新增数据是否从队列头部插入
+            true,    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
+            axisDataLast  // 坐标轴标签
+        ]]
+    );
 	}
     </script>
 </body>

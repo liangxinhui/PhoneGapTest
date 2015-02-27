@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="format-detection" content="telephone=no" />
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
+  <link rel="stylesheet" type="text/css" href="lib/jquery.mobile/jquery.mobile-1.4.1.min.css" />
+  <title>运动提醒</title>
+  <style>
+   img { max-width: 100%; height: auto;} 
+  </style>
+</head>
+<body>
+
+  <!-- Accelerometer 
+        $ cordova plugin add org.apache.cordova.device-motion
+  -->
+  <div data-role="page" id="main">
+    <div data-role="header">
+      <h1>运动提醒2</h1> 
+    </div>
+    <div data-role="content">
+		<input type="button" value="StartWatch" onclick='StartVerbTimer()'></input>
+		<input type="button" value="StopWatch" onclick='StopVerbTimer()'></input>
+		<div>Set Timer:</div>		
+		<input id="timer_input" style="width:100px" value="5"/><br/>
+		<div id='curTime' >TimeLeft:</div>
+		
+		<div id="mainChart" style="height:250px; width:400px; float:left;"></div>	
+		<div id="speedChart" style="height:250px; width:400px;float:left;"></div>	
+				
+    </div>
+	 <script src="lib/echarts-all.js"></script>
+    <script type="text/javascript">
+	
+	
+	function OnVerb()
+	{
+		navigator.vibrate([200, 100, 200, 100, 200, 100, 200]);
+	}	
+	function OnDisVerb()
+	{
+		navigator.vibrate([]);
+	}	
+	
+	var myChart = echarts.init(document.getElementById('mainChart')); 	
+	var option = {
+		tooltip: {
+			show: true
+		},
+		legend: {
+			data:['X','Y','Z']
+		},
+		xAxis : [
+			{
+				type : 'category',
+				data : [0,1]
+			}
+		],
+		yAxis : [
+			{
+				type : 'value'
+			}
+		],
+		series : [
+			{
+				"name":"X",
+				"type":"line",
+				"data":[0,0]
+			},
+			{
+				"name":"Y",
+				"type":"line",
+				"data":[0,0]
+			},
+			{
+				"name":"Z",
+				"type":"line",
+				"data":[0,0]
+			}
+		]
+	};
+
+	// 为echarts对象加载数据 
+	myChart.setOption(option); 
+	
+	var speedChart = echarts.init(document.getElementById('speedChart')); 	
+	var speedChartOption = {
+		tooltip: {
+			show: true
+		},
+		legend: {
+			data:['Speed']
+		},
+		xAxis : [
+			{
+				type : 'category',
+				data : [0,1]
+			}
+		],
+		yAxis : [
+			{
+				type : 'value'
+			}
+		],
+		series : [
+			{
+				"name":"Speed",
+				"type":"bar",
+				"data":[0,0]
+			}
+		]
+	};
+
+	// 为echarts对象加载数据 
+	speedChart.setOption(speedChartOption); 
+		
+	var axisDataLast = 1;
+	var lastData = 0;
+	function AddData(x,y,z,speed)
+	{	
+    axisDataLast += 1;
+	var bIncreaseQueueLength = false;
+	if(axisDataLast < 20)
+	{
+		bIncreaseQueueLength = true;
+	}
+	
+    myChart.addData([[
+            0,        // 系列索引
+            x, // 新增数据
+            false,    // 新增数据是否从队列头部插入
+            bIncreaseQueueLength,    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
+            axisDataLast  // 坐标轴标签
+        ],
+		[1,y,false,bIncreaseQueueLength],
+		[2,z,false,bIncreaseQueueLength]
+		]
+    );
+	
+	speedChart.addData(
+	[[0,speed,false,bIncreaseQueueLength,axisDataLast]]
+	);
+	
+	}
+	
+      var watchID = null;
+	  var checkIntervalSec = 1; 
+      document.addEventListener('deviceready', onDeviceReady, false);
+      function onDeviceReady() {		
+        var options = { frequency: checkIntervalSec*1000 };
+        watchID = navigator.accelerometer.watchAcceleration(onAccelSuccess, onAccelError, options);		
+      }
+
+	  var lastX = null;
+	  var lastY = null;
+	  var lastZ = null;
+	  var lastTime = null;
+      function onAccelSuccess(acceleration) {	  
+	 	var speed = 0;
+		if(lastTime != null)
+		{
+			var deltaX = acceleration.x - lastX;
+			var deltaY = acceleration.y - lastY;
+			var deltaZ = acceleration.z - lastZ;
+			var deltaTime = acceleration.timestamp - lastTime;
+			speed =  Math.sqrt(deltaX*deltaX + deltaY*deltaY + deltaZ*deltaZ)*1000/deltaTime;
+		}
+		AddData(acceleration.x,acceleration.y,acceleration.z,speed);		
+		lastX = acceleration.x;
+		lastY = acceleration.y;
+		lastZ = acceleration.z;
+		lastTime = acceleration.timestamp;
+		
+		CheckTimeout(acceleration);		
+      }
+		
+      function onAccelError() {
+        alert('Could not Retrieve Accelerometer Data!');
+      }
+  
+  
+	var bNeetCheckVerb = false;
+	var iTimeMax = 0;
+	var iTimeLeftSec = 0;
+	function CheckTimeout(acceleration)
+	{
+		if(bNeetCheckVerb)
+		{
+			if(acceleration.z < -8)
+			{	
+				iTimeLeftSec -= checkIntervalSec;		
+				if(iTimeLeftSec <= 0)
+				{
+					OnVerb();
+					bNeetCheckVerb = false;
+				}
+			}
+			else
+			{
+				iTimeLeftSec = iTimeMax;	
+				OnDisVerb();
+			}
+			document.getElementById('curTime').innerHTML = 'TimeLeft:' + iTimeLeftSec;
+		}	
+	}
+	
+	function StartVerbTimer()
+	{
+		bNeetCheckVerb = true;
+		iTimeMax = parseInt(document.getElementById('timer_input').value);
+		iTimeLeftSec = iTimeMax;
+	}
+		
+	function StopVerbTimer()
+	{
+		bNeetCheckVerb = false;
+	}
+  
+    </script>
+  </div>
+
+  <script type="text/javascript" src="cordova.js"></script>
+  <script type="text/javascript" src="lib/jquery/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="lib/jquery.mobile/jquery.mobile-1.4.1.min.js"></script>
+</body>
+</html>

@@ -20,22 +20,23 @@
       <h1>运动提醒</h1> 
     </div>
     <div data-role="content">
+		<div id="mainChart" style="height:300px; width:400px;"></div>
         <div id="accvals">Waiting for accelerometer...</div> 
-		<div id="main" style="height:300px; width:400px;"></div>
-	
     </div>
 	 <script src="lib/echarts-all.js"></script>
     <script type="text/javascript">
-	 var myChart = echarts.init(document.getElementById('main')); 
-	
+	var myChart = echarts.init(document.getElementById('mainChart')); 	
 	var option = {
 		tooltip: {
 			show: true
 		},
+		legend: {
+			data:['X','Y','Z']
+		},
 		xAxis : [
 			{
 				type : 'category',
-				data : [0]
+				data : [0,1]
 			}
 		],
 		yAxis : [
@@ -45,9 +46,19 @@
 		],
 		series : [
 			{
-				"name":"Value",
+				"name":"X",
 				"type":"line",
-				"data":[0]
+				"data":[0,0]
+			},
+			{
+				"name":"Y",
+				"type":"line",
+				"data":[0,0]
+			},
+			{
+				"name":"Z",
+				"type":"line",
+				"data":[0,0]
 			}
 		]
 	};
@@ -55,24 +66,31 @@
 	// 为echarts对象加载数据 
 	myChart.setOption(option); 
 		
-	var axisDataLast = 0;
+	var axisDataLast = 1;
 	var lastData = 0;
-	function AddData()
+	function AddData(x,y,z)
 	{
-	lastData += Math.random() * ((Math.round(Math.random() * 10) % 2) == 0 ? 1 : -1);
-    lastData = lastData.toFixed(1) - 0;
     axisDataLast += 1;
+	var bIncreaseQueueLength = false;
+	if(axisDataLast < 20)
+	{
+		bIncreaseQueueLength = true;
+	}
     // 动态数据接口 addData
     myChart.addData([[
             0,        // 系列索引
-            lastData, // 新增数据
+            x, // 新增数据
             false,    // 新增数据是否从队列头部插入
-            true,    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
+            bIncreaseQueueLength,    // 是否增加队列长度，false则自定删除原有数据，队头插入删队尾，队尾插入删队头
             axisDataLast  // 坐标轴标签
-        ]]
+        ],
+		[1,y,false,bIncreaseQueueLength],
+		[2,z,false,bIncreaseQueueLength]
+		]
     );
 	}
 	
+	  
       var watchID = null;
 	  var checkIntervalSec = 2; 
       document.addEventListener('deviceready', onDeviceReady, false);
@@ -87,13 +105,13 @@
                             '<strong>Accel Y:</strong> ' + acceleration.y.toFixed(1) + '<br />' +
                             '<strong>Accel Z:</strong> ' + acceleration.z.toFixed(1) + '<br />' +
                             '<strong>Timestamp:</strong> ' + acceleration.timestamp + '<br />';
-		AddData();
+		AddData(acceleration.x,acceleration.y,acceleration.z);
       }
 
       function onAccelError() {
         alert('Could not Retrieve Accelerometer Data!');
       }
-
+  
     </script>
   </div>
 

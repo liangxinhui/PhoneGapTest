@@ -9,14 +9,10 @@
   <script type="text/javascript" src="lib/jquery.mobile/jquery.mobile-1.4.1.min.js"></script>
   <title>运动提醒</title>
   <style>
-   img { max-width: 100%; height: auto;} 
   </style>
 </head>
 <body>
 
-  <!-- Accelerometer 
-        $ cordova plugin add org.apache.cordova.device-motion
-  -->
   <div data-role="page" id="main">
     <div data-role="header">
       <h1>运动提醒</h1> 
@@ -35,25 +31,25 @@
 		  <option value="1200">20分钟</option>
 		  <option value="1800">30分钟</option>
 		  <option value="3600">1小时</option>
-		</select>
-		
+		</select>		
 		<br/>
 		<br/>
 		<div>剩余时间(秒):</div>
 		<div id='curTime' style="font-size:100px; color:red;text-align:center">0</div>
-						
-						
+		<br/>
+		<br/>		
+		<br/>
+		<br/>		
 		<br/>
 		<br/>
-      <div style="font-size:10px; text-align:center">点击按钮或翻转手机 启动/停止</div> 
+      <div style="font-size:12px; text-align:center">点击按钮或翻转手机 启动/停止</div> 
     </div>
     <script type="text/javascript">
 	
-	
 	function OnVerb()
 	{
-		navigator.beep(1);
 		navigator.vibrate([200, 100, 200, 100, 200, 100, 200]);
+		navigator.notification.beep(1);
 	}	
 	function OnDisVerb()
 	{
@@ -135,6 +131,7 @@
 	}  
 	$("#timer_input").val("1800");
 	onTimerChanged();
+	navigator.notification.beep(0);
   
     </script>
   </div>

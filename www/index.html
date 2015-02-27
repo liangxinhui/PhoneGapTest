@@ -4,7 +4,9 @@
   <meta charset="utf-8" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, width=device-width, height=device-height" />
-  <link rel="stylesheet" type="text/css" href="lib/jquery.mobile/jquery.mobile-1.4.1.min.css" />
+  <link rel="stylesheet" type="text/css" href="lib/jquery.mobile/jquery.mobile-1.4.1.min.css" />  
+  <script type="text/javascript" src="lib/jquery/jquery-1.11.0.min.js"></script>
+  <script type="text/javascript" src="lib/jquery.mobile/jquery.mobile-1.4.1.min.js"></script>
   <title>运动提醒</title>
   <style>
    img { max-width: 100%; height: auto;} 
@@ -20,15 +22,31 @@
       <h1>运动提醒</h1> 
     </div>
     <div data-role="content">
-		<input type="button" value="StartWatch" onclick='StartVerbTimer()'></input>
-		<input type="button" value="StopWatch" onclick='StopVerbTimer()'></input>
-		<div>Set Timer(min):</div>		
-		<input id="timer_input" style="width:100px" value="5"/><br/>
-		<div>TimeLeft(sec):</div>
+		<input type="button" id="btnSwitcher" value="启动"  onclick='OnSwitcherClicked()'></input>
+		<br/>
+		<br/>
+		<label for="timer_input" class="select">定时：</label>
+		<select name="timer_input" id="timer_input" onchange="onTimerChanged()" >
+		  <option value="30">30秒</option>
+		  <option value="60">1分钟</option>
+		  <option value="300">5分钟</option>
+		  <option value="600">10分钟</option>
+		  <option value="900">15分钟</option>
+		  <option value="1200">20分钟</option>
+		  <option value="1800">30分钟</option>
+		  <option value="3600">1小时</option>
+		</select>
+		
+		<br/>
+		<br/>
+		<div>剩余时间(秒):</div>
 		<div id='curTime' style="font-size:100px; color:red;text-align:center">0</div>
-				
+						
+						
+		<br/>
+		<br/>
+      <div style="font-size:10px; text-align:center">点击按钮或翻转手机 启动/停止</div> 
     </div>
-	<script src="lib/echarts-all.js"></script>
     <script type="text/javascript">
 	
 	
@@ -49,12 +67,19 @@
         var options = { frequency: checkIntervalSec*1000 };
         watchID = navigator.accelerometer.watchAcceleration(onAccelSuccess, onAccelError, options);		
       }
-      function onAccelSuccess(acceleration) {	  
+      function onAccelSuccess(acceleration) {	 
+		CheckWatchFlag(acceleration);
 		CheckTimeout(acceleration);		
       }		
       function onAccelError() {
         alert('Could not Retrieve Accelerometer Data!');
       }  
+  
+	function IsMotionless(acceleration)
+	{
+		return (acceleration.z > 8 && acceleration.y < 4);
+	}
+  
   
 	var bNeetCheckVerb = false;
 	var iTimeMax = 0;
@@ -63,7 +88,7 @@
 	{
 		if(bNeetCheckVerb)
 		{
-			if(acceleration.z > 8 && acceleration.y < 4)
+			if(IsMotionless(acceleration))
 			{	
 				iTimeLeftSec -= checkIntervalSec;		
 				if(iTimeLeftSec <= 0)
@@ -77,29 +102,43 @@
 				iTimeLeftSec = iTimeMax;	
 				OnDisVerb();
 			}
-			document.getElementById('curTime').innerHTML = iTimeLeftSec;
 		}	
+		document.getElementById('curTime').innerHTML = iTimeLeftSec;
 	}
 	
-	function StartVerbTimer()
+	function MakeBtnSwitcherText()
+	{		
+		var textBtnSwitcher = bNeetCheckVerb ? '停止':'启动';
+		return textBtnSwitcher;
+	}
+	function OnSwitcherClicked()
+	{			
+		onTimerChanged();
+		bNeetCheckVerb = !bNeetCheckVerb;
+		$('#btnSwitcher').val(MakeBtnSwitcherText()).button("refresh");
+	}		
+	
+	function CheckWatchFlag(acceleration)
 	{
-		bNeetCheckVerb = true;
-		iTimeMax = parseInt(document.getElementById('timer_input').value)*60;
+		if(acceleration.z < -5)
+		{
+			OnSwitcherClicked();
+		}
+	}
+	
+	function onTimerChanged()
+	{	
+		iTimeMax = parseInt($('#timer_input').val());	
 		iTimeLeftSec = iTimeMax;
-	}
-		
-	function StopVerbTimer()
-	{
-		bNeetCheckVerb = false;
-		iTimeMax = 0;
-		iTimeLeftSec = 0;
-	}
+		document.getElementById('curTime').innerHTML = iTimeLeftSec;
+	}  
+	$("#timer_input").val("1800");
+	onTimerChanged();
   
     </script>
   </div>
 
   <script type="text/javascript" src="cordova.js"></script>
-  <script type="text/javascript" src="lib/jquery/jquery-1.11.0.min.js"></script>
-  <script type="text/javascript" src="lib/jquery.mobile/jquery.mobile-1.4.1.min.js"></script>
+  
 </body>
 </html>

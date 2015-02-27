@@ -115,12 +115,14 @@
 		$('#btnSwitcher').val(MakeBtnSwitcherText()).button("refresh");
 	}		
 	
+        var lastZ = 0;
 	function CheckWatchFlag(acceleration)
 	{
-		if(acceleration.z < -5)
+		if(acceleration.z < -5 && lastZ > 0)
 		{
 			OnSwitcherClicked();
 		}
+                lastZ = acceleration.z;
 	}
 	
 	function onTimerChanged()

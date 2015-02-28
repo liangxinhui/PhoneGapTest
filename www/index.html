@@ -53,12 +53,6 @@
 		navigator.notification.beep(1);
 	}	
 	
-	function DisVerb()
-	{
-		navigator.vibrate([]);
-	}	
-	
-	
       var watchID = null;
 	  var checkIntervalSec = 1; 
       document.addEventListener('deviceready', onDeviceReady, false);
@@ -99,7 +93,7 @@
 			{
 				//如果设备有晃动，计时重置
 				iTimeLeftSec = iTimeMax;	
-				DisVerb();
+				navigator.vibrate(50);	
 			}
 		}	
 		document.getElementById('curTime').innerHTML = iTimeLeftSec;
@@ -107,11 +101,13 @@
 	
 	function OnSwitcherClicked()
 	{			
-		onTimerChanged();
-		bWatching = !bWatching;
+		bWatching = !bWatching;		
+		var iVerbTime = bWatching ? [50] : [50,100,50];
+		navigator.vibrate(iVerbTime);		
+		onTimerChanged();		
 		var textBtnSwitcher = bWatching ? '停止':'启动';
-		$('#btnSwitcher').val(textBtnSwitcher).button("refresh");		
-		navigator.vibrate([200]);
+		$('#btnSwitcher').val(textBtnSwitcher).button("refresh");	
+		
 	}		
 	
 	var lastZ = 0;

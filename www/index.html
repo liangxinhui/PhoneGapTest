@@ -111,10 +111,7 @@
 		bWatching = !bWatching;
 		var textBtnSwitcher = bWatching ? '停止':'启动';
 		$('#btnSwitcher').val(textBtnSwitcher).button("refresh");		
-		if(bWatching)
-		{			
-			navigator.vibrate([100]);
-		}
+		navigator.vibrate([200]);
 	}		
 	
 	var lastZ = 0;

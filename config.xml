@@ -10,6 +10,7 @@
   <gap:plugin name="org.apache.cordova.dialogs" version="0.2.10" />
   <gap:plugin name="org.apache.cordova.vibration" version="0.3.11" />
   <gap:platform name="android" />
+  <gap:platform name="windows" />
   <icon src="icon.png"/>
   <access /> 
 </widget>

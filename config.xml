@@ -1,4 +1,4 @@
-<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="cn.liangxh.excercisereminder" version="1.0.5">
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0" id="cn.liangxh.excercisereminder" version="1.0.6">
   <name>运动提醒</name>
   <description>当手机静止放在桌面上超过一定时间后发出提醒。</description>
   <author href="" email="liangxinhui@qq.com">liang_xinhui</author> 

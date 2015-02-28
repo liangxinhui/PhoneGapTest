@@ -46,12 +46,14 @@
     </div>
     <script type="text/javascript">
 	
-	function OnVerb()
+	function OnTimeout()
 	{
+		bWatching = false;
 		navigator.vibrate([200, 100, 200, 100, 200, 100, 200]);
 		navigator.notification.beep(1);
 	}	
-	function OnDisVerb()
+	
+	function DisVerb()
 	{
 		navigator.vibrate([]);
 	}	
@@ -78,51 +80,51 @@
 	}
   
   
-	var bNeetCheckVerb = false;
+	var bWatching = false;
 	var iTimeMax = 0;
 	var iTimeLeftSec = 0;
 	function CheckTimeout(acceleration)
 	{
-		if(bNeetCheckVerb)
+		if(bWatching)
 		{
 			if(IsMotionless(acceleration))
 			{	
 				iTimeLeftSec -= checkIntervalSec;		
 				if(iTimeLeftSec <= 0)
 				{
-					OnVerb();
-					bNeetCheckVerb = false;
+					OnTimeout();					
 				}
 			}
 			else
 			{
+				//如果设备有晃动，计时重置
 				iTimeLeftSec = iTimeMax;	
-				OnDisVerb();
+				DisVerb();
 			}
 		}	
 		document.getElementById('curTime').innerHTML = iTimeLeftSec;
 	}
 	
-	function MakeBtnSwitcherText()
-	{		
-		var textBtnSwitcher = bNeetCheckVerb ? '停止':'启动';
-		return textBtnSwitcher;
-	}
 	function OnSwitcherClicked()
 	{			
 		onTimerChanged();
-		bNeetCheckVerb = !bNeetCheckVerb;
-		$('#btnSwitcher').val(MakeBtnSwitcherText()).button("refresh");
+		bWatching = !bWatching;
+		var textBtnSwitcher = bWatching ? '停止':'启动';
+		$('#btnSwitcher').val(textBtnSwitcher).button("refresh");		
+		if(bWatching)
+		{			
+			navigator.vibrate([100]);
+		}
 	}		
 	
-        var lastZ = 0;
+	var lastZ = 0;
 	function CheckWatchFlag(acceleration)
 	{
 		if(acceleration.z < -5 && lastZ > 0)
 		{
 			OnSwitcherClicked();
 		}
-                lastZ = acceleration.z;
+		lastZ = acceleration.z;
 	}
 	
 	function onTimerChanged()
@@ -131,6 +133,7 @@
 		iTimeLeftSec = iTimeMax;
 		document.getElementById('curTime').innerHTML = iTimeLeftSec;
 	}  
+	
 	$("#timer_input").val("1800");
 	onTimerChanged();
 	navigator.notification.beep(0);

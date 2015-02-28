@@ -11,4 +11,5 @@
   <gap:plugin name="org.apache.cordova.vibration" version="0.3.11" />
   <gap:platform name="android" />
   <icon src="icon.png"/>
+  <access /> 
 </widget>
